@@ -9,7 +9,7 @@ import {
 import { auth, db } from "../firebase";
 import { signOut } from "firebase/auth";
 import { updateDoc, doc } from "firebase/firestore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -20,12 +20,27 @@ import KvkkScreen from "./KvkkScreen";
 import { avatars } from "../constants/avatars";
 import { useUser } from "../context/UserContext";
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ resetTrigger }) {
   const [page, setPage] = useState("profile");
   const [modalVisible, setModalVisible] = useState(false);
 
   const { avatar, setAvatar } = useUser();
   const user = auth.currentUser;
+  /* 🔑 TAB RESELECT → PROFİLE DÖN */
+  useEffect(() => {
+    setPage("profile");
+  }, [resetTrigger]);
+
+  /* 🔑 DEFAULT AVATAR KONTROLÜ */
+  useEffect(() => {
+    if (!avatar && user) {
+      setAvatar("default");
+
+      updateDoc(doc(db, "users", user.uid), {
+        avatar: "default",
+      }).catch(() => { });
+    }
+  }, [avatar, user]);
 
   /* -------- SAVE AVATAR -------- */
   const selectAvatar = async (key) => {

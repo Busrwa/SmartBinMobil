@@ -1,6 +1,22 @@
 import { View, Text } from "react-native";
 
-export default function DeviceCard({ id, percentage, customName }) {
+const MAX_DISTANCE = 50;
+
+export default function DeviceCard({
+  deviceId,
+  customName,
+  distanceCm = 0,
+}) {
+  const percentage = Math.min(
+    100,
+    Math.max(
+      0,
+      Math.round(
+        ((MAX_DISTANCE - distanceCm) / MAX_DISTANCE) * 100
+      )
+    )
+  );
+
   let bgColor = "#D5F5D5";
   let warningText = "";
 
@@ -19,13 +35,12 @@ export default function DeviceCard({ id, percentage, customName }) {
         backgroundColor: bgColor,
         padding: 16,
         borderRadius: 14,
-        marginBottom: 16,
         borderWidth: 1,
         borderColor: "#ccc",
       }}
     >
       <Text style={{ fontSize: 16, fontWeight: "600" }}>
-        Bin ID: {id}
+        Bin ID: {deviceId}
       </Text>
 
       {customName ? (
@@ -34,7 +49,7 @@ export default function DeviceCard({ id, percentage, customName }) {
         </Text>
       ) : null}
 
-      {/* Progress Bar */}
+      {/* Progress */}
       <View
         style={{
           height: 14,
@@ -57,11 +72,11 @@ export default function DeviceCard({ id, percentage, customName }) {
         Fullness: %{percentage}
       </Text>
 
-      {warningText ? (
+      {warningText && (
         <Text style={{ color: "#b30000", fontWeight: "bold" }}>
           {warningText}
         </Text>
-      ) : null}
+      )}
     </View>
   );
 }

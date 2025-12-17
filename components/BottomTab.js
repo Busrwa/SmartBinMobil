@@ -2,7 +2,7 @@ import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function BottomTab({ tab, setTab }) {
+export default function BottomTab({ tab, setTab, onReselect }) {
   return (
     <SafeAreaView edges={["bottom"]} style={styles.safe}>
       <View style={styles.container}>
@@ -11,7 +11,13 @@ export default function BottomTab({ tab, setTab }) {
           icon="trash-outline"
           activeIcon="trash"
           active={tab === "devices"}
-          onPress={() => setTab("devices")}
+          onPress={() => {
+            if (tab === "devices") {
+              onReselect("devices");
+            } else {
+              setTab("devices");
+            }
+          }}
         />
 
         <TabItem
@@ -19,7 +25,13 @@ export default function BottomTab({ tab, setTab }) {
           icon="add-circle-outline"
           activeIcon="add-circle"
           active={tab === "add"}
-          onPress={() => setTab("add")}
+          onPress={() => {
+            if (tab === "add") {
+              onReselect("add");
+            } else {
+              setTab("add");
+            }
+          }}
         />
 
         <TabItem
@@ -27,8 +39,15 @@ export default function BottomTab({ tab, setTab }) {
           icon="person-outline"
           activeIcon="person"
           active={tab === "profile"}
-          onPress={() => setTab("profile")}
+          onPress={() => {
+            if (tab === "profile") {
+              onReselect("profile");
+            } else {
+              setTab("profile");
+            }
+          }}
         />
+
       </View>
     </SafeAreaView>
   );

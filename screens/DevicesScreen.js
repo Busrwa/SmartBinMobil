@@ -1,91 +1,169 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { auth, db } from "../firebase";
 import {
   collection,
-  doc,
-  getDoc,
-  onSnapshot,
+  getDocs,
   deleteDoc,
 } from "firebase/firestore";
+import { useDevices } from "../context/DevicesContext";
 import DeviceCard from "../components/DeviceCard";
+import Loader from "../components/Loader";
 
 export default function DevicesScreen() {
-  const [devices, setDevices] = useState([]);
+  const { devices, loadingDevices } = useDevices();
 
-  useEffect(() => {
-    const ref = collection(db, "users", auth.currentUser.uid, "devices");
+  // 🔥 deviceId'ye göre silme (DOĞRU YÖNTEM)
+  const deleteDevice = async (deviceId) => {
+    if (!auth.currentUser) return;
 
-    const unsub = onSnapshot(ref, async (snapshot) => {
-      const list = [];
+    try {
+      const ref = collection(
+        db,
+        "users",
+        auth.currentUser.uid,
+        "devices"
+      );
 
-      for (const snap of snapshot.docs) {
-        const deviceId = snap.id;
-        const customName = snap.data().customName || "";
+      const snapshot = await getDocs(ref);
 
-        const binRef = doc(db, "bin", deviceId);
-        const binSnap = await getDoc(binRef);
-
-        let percentage = 0;
-
-        if (binSnap.exists()) {
-          const distance = binSnap.data().distanceCm;
-          const capacity = 50;
-          const filled = capacity - distance;
-
-          percentage = Math.round((filled / capacity) * 100);
-          if (percentage < 0) percentage = 0;
-          if (percentage > 100) percentage = 100;
+      snapshot.docs.forEach((docSnap) => {
+        if (docSnap.data().deviceId === deviceId) {
+          deleteDoc(docSnap.ref);
         }
-
-        list.push({ id: deviceId, customName, percentage });
-      }
-
-      setDevices(list);
-    });
-
-    const interval = setInterval(() => {
-      setDevices((prev) => [...prev]);
-    }, 60000); // ⏱ 1 dakika
-
-    return () => {
-      unsub();
-      clearInterval(interval);
-    };
-  }, []);
-
-  const deleteDevice = async (id) => {
-    await deleteDoc(
-      doc(db, "users", auth.currentUser.uid, "devices", id)
-    );
+      });
+    } catch (e) {
+      console.log("Delete device error:", e);
+    }
   };
 
   return (
-    <ScrollView style={{ padding: 16 }}>
-      <Text style={{ fontSize: 22, marginBottom: 16 }}>
-        My Bins
-      </Text>
-
-      {devices.length === 0 && <Text>No bins added.</Text>}
-
-      {devices.map((d) => (
-        <View key={d.id}>
-          <DeviceCard {...d} />
-          <TouchableOpacity
-            onPress={() => deleteDevice(d.id)}
-            style={{
-              backgroundColor: "red",
-              padding: 8,
-              borderRadius: 8,
-              marginBottom: 24,
-            }}
-          >
-            <Text style={{ color: "white", textAlign: "center" }}>
-              Delete
-            </Text>
-          </TouchableOpacity>
+    <SafeAreaView style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* HEADER */}
+        <View style={styles.headerCard}>
+          <Ionicons
+            name="trash-bin-outline"
+            size={36}
+            color="#2e7d32"
+          />
+          <Text style={styles.title}>My Bins</Text>
+          <Text style={styles.subtitle}>
+            Monitor the fill levels of your smart trash bins.
+          </Text>
         </View>
-      ))}
-    </ScrollView>
+
+        {/* LOADING */}
+        {loadingDevices ? (
+          <Loader />
+        ) : devices.length === 0 ? (
+          <View style={styles.emptyBox}>
+            <Ionicons
+              name="cube-outline"
+              size={42}
+              color="#9ca3af"
+            />
+            <Text style={styles.emptyText}>
+              You have not added any bins yet.
+            </Text>
+          </View>
+        ) : (
+          devices.map((d) => (
+            <View
+              key={d.deviceId}
+              style={styles.cardWrapper}
+            >
+              {/* 🔥 DOĞRU PROPLAR */}
+              <DeviceCard
+                deviceId={d.deviceId}
+                customName={d.customName}
+                distanceCm={d.distanceCm}
+              />
+
+              <TouchableOpacity
+                style={styles.deleteBtn}
+                onPress={() =>
+                  deleteDevice(d.deviceId)
+                }
+              >
+                <Ionicons
+                  name="trash-outline"
+                  size={18}
+                  color="white"
+                />
+                <Text style={styles.deleteText}>
+                  Remove
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ))
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
+
+/* ---------------- STYLES ---------------- */
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: "#f9fafb" },
+  container: { padding: 20, gap: 20 },
+
+  headerCard: {
+    backgroundColor: "white",
+    borderRadius: 18,
+    padding: 24,
+    alignItems: "center",
+    gap: 8,
+    elevation: 4,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1f2937",
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
+  },
+
+  cardWrapper: {
+    backgroundColor: "white",
+    borderRadius: 18,
+    padding: 12,
+    elevation: 3,
+  },
+
+  deleteBtn: {
+    backgroundColor: "#dc2626",
+    padding: 12,
+    borderRadius: 14,
+    marginTop: 12,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 6,
+  },
+  deleteText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+
+  emptyBox: {
+    alignItems: "center",
+    marginTop: 40,
+    gap: 10,
+  },
+  emptyText: {
+    color: "#6b7280",
+    fontSize: 15,
+  },
+});

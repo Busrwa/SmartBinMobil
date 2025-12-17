@@ -7,6 +7,7 @@ import RegisterScreen from "./screens/RegisterScreen";
 import DashboardScreen from "./screens/DashboardScreen";
 
 import { UserProvider } from "./context/UserContext";
+import { DevicesProvider } from "./context/DevicesContext";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -31,7 +32,9 @@ export default function App() {
 
   return (
     <UserProvider>
-      <DashboardScreen />
+      <DevicesProvider>
+        <DashboardScreen />
+      </DevicesProvider>
     </UserProvider>
   );
 }

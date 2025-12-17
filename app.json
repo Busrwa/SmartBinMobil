@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Smart Bin",
+    "slug": "smart-bin",
+
+    "icon": "./assets/logo.png",
+
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+
+    "ios": {
+      "icon": "./assets/logo.png"
+    }
+  }
+}

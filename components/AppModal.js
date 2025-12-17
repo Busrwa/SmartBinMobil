@@ -6,12 +6,12 @@ export default function AppModal({
   title,
   message,
   onClose,
-  type = "info", // 🟢 YENİ ama opsiyonel
+  type = "info",
 }) {
   const colors = {
     success: "#2e7d32",
     error: "#dc2626",
-    info: "#2563eb",
+    info: "#2e7d32",
   };
 
   const icons = {
