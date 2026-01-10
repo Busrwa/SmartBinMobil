@@ -8,11 +8,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { auth, db } from "../firebase";
-import {
-  collection,
-  getDocs,
-  deleteDoc,
-} from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore";
 import { useDevices } from "../context/DevicesContext";
 import DeviceCard from "../components/DeviceCard";
 import Loader from "../components/Loader";
@@ -20,25 +16,20 @@ import Loader from "../components/Loader";
 export default function DevicesScreen() {
   const { devices, loadingDevices } = useDevices();
 
-  // 🔥 deviceId'ye göre silme (DOĞRU YÖNTEM)
-  const deleteDevice = async (deviceId) => {
+  // 🔥 DOC ID ile SİLME (EN DOĞRU YÖNTEM)
+  const deleteDevice = async (docId) => {
     if (!auth.currentUser) return;
 
     try {
-      const ref = collection(
-        db,
-        "users",
-        auth.currentUser.uid,
-        "devices"
+      await deleteDoc(
+        doc(
+          db,
+          "users",
+          auth.currentUser.uid,
+          "devices",
+          docId
+        )
       );
-
-      const snapshot = await getDocs(ref);
-
-      snapshot.docs.forEach((docSnap) => {
-        if (docSnap.data().deviceId === deviceId) {
-          deleteDoc(docSnap.ref);
-        }
-      });
     } catch (e) {
       console.log("Delete device error:", e);
     }
@@ -76,11 +67,7 @@ export default function DevicesScreen() {
           </View>
         ) : (
           devices.map((d) => (
-            <View
-              key={d.deviceId}
-              style={styles.cardWrapper}
-            >
-              {/* 🔥 DOĞRU PROPLAR */}
+            <View key={d.id} style={styles.cardWrapper}>
               <DeviceCard
                 deviceId={d.deviceId}
                 customName={d.customName}
@@ -89,9 +76,7 @@ export default function DevicesScreen() {
 
               <TouchableOpacity
                 style={styles.deleteBtn}
-                onPress={() =>
-                  deleteDevice(d.deviceId)
-                }
+                onPress={() => deleteDevice(d.id)}
               >
                 <Ionicons
                   name="trash-outline"

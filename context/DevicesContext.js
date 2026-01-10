@@ -14,12 +14,12 @@ export function DevicesProvider({ children }) {
   const [devices, setDevices] = useState([]);
   const [loadingDevices, setLoadingDevices] = useState(true);
 
-  // bin listener'ları tutmak için
+  // bin realtime listener'ları
   const binUnsubsRef = useRef({});
 
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
-      // 🧹 her auth değişiminde temizlik
+      // 🧹 temizlik
       Object.values(binUnsubsRef.current).forEach((u) => u());
       binUnsubsRef.current = {};
       setDevices([]);
@@ -38,12 +38,19 @@ export function DevicesProvider({ children }) {
         "devices"
       );
 
-      // 🔥 kullanıcı device listesi
+      // 🔥 kullanıcı device listesi (REAL-TIME)
       const unsubscribeDevices = onSnapshot(devicesRef, (snapshot) => {
         const userDevices = snapshot.docs.map((d) => ({
-          id: d.id, // sadece UI için
+          id: d.id, // 🔥 firestore doc id (SİLME İÇİN)
           ...d.data(),
         }));
+
+        // silinenleri state’ten temizle
+        setDevices((prev) =>
+          prev.filter((p) =>
+            userDevices.some((u) => u.deviceId === p.deviceId)
+          )
+        );
 
         if (userDevices.length === 0) {
           setDevices([]);
@@ -53,7 +60,6 @@ export function DevicesProvider({ children }) {
 
         userDevices.forEach((device) => {
           const deviceId = device.deviceId;
-
           if (!deviceId) return;
 
           // bin listener yoksa ekle
@@ -75,6 +81,7 @@ export function DevicesProvider({ children }) {
                   return [
                     ...others,
                     {
+                      id: device.id, // 🔥 doc id korunuyor
                       deviceId,
                       customName: device.customName || "",
                       distanceCm: binData.distanceCm,
