@@ -1,61 +1,58 @@
-# 🗑️ SmartBin – Web Dashboard
+# 🗑️ SmartBin – Mobile App
 
-React-based web dashboard for **SmartBin**, a full-stack IoT-based smart waste management system developed as a BSc Software Engineering graduation project.
+React Native mobile client for **SmartBin**, a full-stack IoT-based smart waste management system developed as a BSc Software Engineering graduation project.
 
-The dashboard allows users to monitor smart bin fill levels, lid status, and system updates in real time through Firebase Realtime Database. It is part of a complete IoT system that includes hardware, cloud communication, a web dashboard, and a mobile application.
+The mobile app allows users to monitor smart bin status in real time, including fill level, lid status, and system updates through Firebase Realtime Database.
 
 ## 🚀 Live & Related Links
 
 * **Live Web Dashboard:** https://smartbinwebsite.netlify.app/
-* **Mobile Repository:** https://github.com/Busrwa/SmartBinMobil
+* **Web Repository:** https://github.com/Busrwa/SmartBinWebsite
 * **Portfolio Project Page:** https://busrayagcioglu.netlify.app/
 
 ## ⚙️ Tech Stack
 
-* React
-* Vite
+* React Native
+* Expo
 * Firebase Realtime Database
 * Firebase Authentication
-* Netlify
-* ESP32 data flow through Firebase
+* ESP32 integration through Firebase data flow
 
 ## 💡 Features
 
 * Real-time bin fill level monitoring
 * Lid status tracking
-* Multi-bin dashboard interface
 * Firebase Realtime Database listeners for live updates
-* User authentication flow
-* Responsive web interface
-* Deployed live on Netlify
+* Cross-platform mobile interface for iOS and Android
+* User-friendly mobile dashboard for smart waste management
 * Designed as part of a full-stack IoT system with hardware, web, mobile, and cloud layers
 
-## 🧩 System Architecture
+## 🧩 System Context
 
 SmartBin consists of four integrated layers:
 
 1. **Hardware Layer:** ESP32, ultrasonic sensors, servo motor, LED/buzzer indicators
-2. **Cloud Layer:** Firebase Realtime Database for live data synchronization
-3. **Web Layer:** React dashboard deployed on Netlify
-4. **Mobile Layer:** React Native app for mobile monitoring
+2. **Cloud Layer:** Firebase Realtime Database for live system data
+3. **Web Layer:** React-based dashboard deployed on Netlify
+4. **Mobile Layer:** React Native mobile application for real-time monitoring
 
-The ESP32 sends sensor data to Firebase, including bin fill level and lid status. The web dashboard listens to Firebase updates and displays the latest system state to the user in real time.
+The ESP32 sends sensor data to Firebase, and the mobile app listens to database updates to display the latest bin status to the user.
 
 ## 👩‍💻 My Role
 
 I contributed to SmartBin as part of a two-person senior graduation project in Software Engineering. My work focused on the software and IoT integration layers of the system, including ultrasonic sensor calibration with ESP32, Firebase-based real-time communication, notification logic, UV-C module integration, and mobile/web dashboard development.
 
-For the web dashboard, I designed and implemented the React interface, connected the application to Firebase Realtime Database, structured the dashboard views, and deployed the project on Netlify.
+For the mobile app, I worked on the React Native interface, Firebase data integration, real-time status monitoring screens, authentication flow, and user-facing dashboard structure.
 
 I also contributed to testing, debugging, documentation, and the preparation of the final project report and presentation. The project allowed me to work across embedded systems, cloud communication, real-time data synchronization, and user-facing software interfaces.
 
 ## 🛠️ Getting Started
 
 ```bash
-git clone https://github.com/Busrwa/SmartBinWebsite.git
-cd SmartBinWebsite
+git clone https://github.com/Busrwa/SmartBinMobil.git
+cd SmartBinMobil
 npm install
-npm run dev
+npx expo start
 ```
 
 ## 📌 Project Type
